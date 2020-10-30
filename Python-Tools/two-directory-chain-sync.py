@@ -1,7 +1,6 @@
 import os
 import shutil
 import sys
-from distutils import dir_util
 from os import path
 
 
@@ -9,9 +8,9 @@ from os import path
 def copy(src, destination_dir):
     try:
         if os.path.isfile(src):
-            shutil.copy(src, destination_dir)
+            shutil.copy2(src, destination_dir)
         else:
-            dir_util.copy_tree(src, destination_dir)
+            shutil.copytree(src, destination_dir)
     except Exception as e:
         print("Unable to copy: " + str(e))
 
@@ -32,16 +31,13 @@ def copy_logic(base_path, target_path, destination, x):
     temp_destination = destination + "\\" + x
 
     if not path.exists(temp_target_path):
-        if path.isdir(temp_base_path):
-            create_dir(temp_destination)
         copy(temp_base_path, temp_destination)
     else:
         if path.isdir(temp_base_path):
             create_dir(temp_destination)
             helper(temp_base_path, temp_target_path, temp_destination)
         elif path.isfile(temp_base_path):
-            if path.getmtime(temp_base_path) > path.getmtime(temp_target_path) or path.getctime(temp_base_path) > \
-                    path.getctime(temp_target_path):
+            if path.getmtime(temp_base_path) > path.getmtime(temp_target_path):
                 copy(temp_base_path, destination)
             else:
                 copy(temp_target_path, destination)
